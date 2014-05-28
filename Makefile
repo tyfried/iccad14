@@ -13,12 +13,16 @@ debug: all
 gprof: FLAGS += -pg
 gprof: all
 
-all: expcnf.o tseitin.o
-	g++ $(FLAGS) expcnf.o tseitin.o -o expcnf
+all: expcnf.o tseitin.o sqlite3.o util.o
+	g++ -lpthread -ldl $(FLAGS) expcnf.o tseitin.o sqlite3.o util.o -o expcnf
 expcnf.o: expcnf.cpp
 	g++ $(FLAGS) -c expcnf.cpp
 tseitin.o: tseitin.cpp tseitin.h
 	g++ $(FLAGS) -c tseitin.cpp
+sqlite3.o: sqlite3.c sqlite3.h
+	gcc -c sqlite3.c 
+util.o: util.cpp util.h
+	g++ $(FLAGS) -c util.cpp
 
 
 # make clean - remove .o files.  You can modify it to remove whatever

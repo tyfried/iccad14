@@ -1,12 +1,15 @@
-#ifndef __tseitin_h__
-#define __tseitin_h__
+#ifndef __TSEITIN_H__
+#define __TSEITIN_H__
 
 #include <sstream>
 #include <vector>
+#include <string>
+#include <unordered_map>
 
 using namespace std;
 
-void tseitin(int argc, char **argv);
+typedef std::unordered_map<string,int> Stringmap;
+
 int and_op(int product, const vector<int> &operands, ostringstream &oss);
 int nand_op(int product, const vector<int> &operands, ostringstream &oss);
 int or_op(int product, const vector<int> &operands, ostringstream &oss);
