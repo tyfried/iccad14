@@ -84,7 +84,7 @@ void TestCase::tseitin()
 		input >> temp;
 	}
 	
-	//write out file
+	//write out cnf file
 	output << "p cnf " << count << " " << num_cl << "\n";
 	output << oss.str();
 	
