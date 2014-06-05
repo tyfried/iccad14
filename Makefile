@@ -15,6 +15,7 @@ gprof: all
 
 all: expcnf.o tseitin.o sqlite3.o util.o
 	g++ -lpthread -ldl $(FLAGS) expcnf.o tseitin.o sqlite3.o util.o -o expcnf
+	rm sat.txt
 expcnf.o: expcnf.cpp
 	g++ $(FLAGS) -c expcnf.cpp
 tseitin.o: tseitin.cpp tseitin.h
@@ -29,4 +30,4 @@ util.o: util.cpp util.h
 clean:
 	rm -f *.o
 	rm -f expcnf
-	
+

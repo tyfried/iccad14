@@ -47,7 +47,9 @@ void TestCase::solve()
 		sol_runtime.push_back(to_string(elapsed.count()));
 		
 		int sat = 1;
+		ofstream of("sat.txt",ofstream::app);
 		while(fgets(buff, sizeof(buff), in)!=NULL){
+			of << buff;
 			if (strstr(buff,"UNSATISFIABLE")) sat--;
 		}
 		pclose(in);
@@ -58,10 +60,12 @@ void TestCase::solve()
 }
 
 
-TestCase::TestCase(char **argv)
+TestCase::TestCase(string s_f)
 {
-	source_file = string(argv[3]);
-	cnf_file = string(argv[4]);
+	//source_file = string(argv[3]);
+	//cnf_file = string(argv[4]);
+	source_file = s_f;
+	
 	
 	//name
 	size_t found1 = source_file.find_first_of("/");

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
@@ -13,7 +14,7 @@
 
 using namespace std;
 
-void TestCase::tseitin()
+void TestCase::tseitin(int blob)
 {
 	//timer
 	chrono::time_point<chrono::system_clock> start, end;
@@ -38,8 +39,33 @@ void TestCase::tseitin()
 	while (temp!="endmodule"){
 		if (temp=="wire" || temp=="output" || temp=="input"){
 			input >> temp;
-			temp.erase(temp.end()-1);
-			smap[temp] = ++count;
+			size_t pos2 = temp.find_first_of(",");
+			if (pos2!=string::npos){ //possible optimization, with knowing temp is "wire", separate else if
+				size_t pos1;
+				pos2=-1;
+				while (temp[pos2]!=';'){
+					pos1=pos2+1;
+					pos2 = temp.find_first_of(",;",pos1);
+					string wire_temp = temp.substr(pos1,pos2-pos1);
+					smap[wire_temp] = ++count;
+				}
+			}
+			else{
+				temp.erase(temp.end()-1);
+				smap[temp] = ++count;
+			}
+		}
+		else if (temp[0]=='n' && temp[2]=='t' && temp[3] =='('){
+			vector<int> operands;
+			size_t pos1 = temp.find_first_of("(");
+			size_t pos2 = temp.find_first_of(",");
+			size_t pos3 = temp.find_first_of(")");
+			string help1 = temp.substr(pos1+1,pos2-pos1-1);
+			string help2 = temp.substr(pos2+1,pos3-pos2-1);
+			int product = smap[help1];
+			int double_temp = smap[help2];
+			operands.push_back(double_temp);
+			//num_cl+=not_op(product,operands,oss);
 		}
 		else{
 			vector<int> operands;
@@ -63,10 +89,11 @@ void TestCase::tseitin()
 					if (str[4]=='0' && temp=="and") skip = true;
 					if (str[4]=='1' && temp=="or") skip = true;
 				}
-				
-				int val = smap[str];
-				if (product==-1) product = val;
-				else operands.push_back(val);
+				else{
+					int val = smap[str];
+					if (product==-1) product = val;
+					else operands.push_back(val);
+				}
 				input >> junk;
 			}
 			if (!skip){
@@ -77,8 +104,8 @@ void TestCase::tseitin()
 				else if (temp=="xor") num_cl+=xor_op(product,operands,oss);
 				else if (temp=="xnor") num_cl+=xnor_op(product,operands,oss);
 				else if (temp=="not") num_cl+=not_op(product,operands,oss);
-				else if (temp=="buffer") num_cl+=buffer_op(product,operands,oss);
-				else assert(0);
+				else if (temp=="buf") num_cl+=buffer_op(product,operands,oss);
+				else assert(printf(temp.c_str()) && 0);
 			}
 		}
 		input >> temp;
@@ -161,12 +188,18 @@ int xnor_op(int product, const vector<int> &operands, ostringstream &oss){
 	assert(operands.size()==2);
 	for (int i=0; i<2; i++){
 		for (int j=0; j<2; j++){
-			if (i) oss << operands[0] << " ";
-			else oss << "-" << operands[0] << " ";
-			if (j) oss << operands[1] << " ";
-			else oss << "-" << operands[1] << " ";
-			if (!((i^j)&1)) oss << product << " 0\n";
-			else oss << "-" << product << " 0\n";
+			if (i) 
+				oss << operands[0] << " ";
+			else 
+				oss << "-" << operands[0] << " ";
+			if (j) 
+				oss << operands[1] << " ";
+			else 
+				oss << "-" << operands[1] << " ";
+			if (!((i^j)&1)) 
+				oss << product << " 0\n";
+			else 
+				oss << "-" << product << " 0\n";
 		}
 	}
 	return 4;
@@ -181,7 +214,7 @@ int not_op(int product, const vector<int> &operands, ostringstream &oss){
 
 int buffer_op(int product, const vector<int> &operands, ostringstream &oss){
 	assert(operands.size()==1);
-	oss << "-" << operands[0] << product << " 0\n";
+	oss << "-" << operands[0] << " " << product << " 0\n";
 	oss << operands[0] << " -" << product << " 0\n";
 	return 2;
 }

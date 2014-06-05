@@ -24,8 +24,9 @@ struct TestCase{
 	vector<vector<string>> sol_options;
 	vector<int> satisfied;
 	
-	TestCase(char **argv);
-	void tseitin();
+	TestCase(string s_f);
+	//TestCase(char **argv);
+	void tseitin(int blob);
 	void query(string sql, int (*callback)(void*,int,char**,char**),string param);
 	void solve();
 	string gen_sql();
